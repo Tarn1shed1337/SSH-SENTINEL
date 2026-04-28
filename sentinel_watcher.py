@@ -3,17 +3,19 @@ import subprocess
 import time
 
 LOG_FILE = "/var/log/auth.log"
+
 MAX_ATTEMPTS = 5
 BAN_CMD = ["sudo","iptables","-A","INPUT","-s","{IP}" ,"-j","DROP"]
 
 def ban_ip(ip):
+    tool = "ip6tables" if ":" in ip else "iptables"
     print(f"Banning {ip} (Attempts threshold reached)")
-    current_ban_cmd = [arg.replace("{IP}",ip) for arg in BAN_CMD]
+    cmd = [tool, "-A", "INPUT", "-s", ip, "-j", "DROP"]
     try:
-        subprocess.run(current_ban_cmd , check=True)
+        subprocess.run(cmd , check=True)
         print(f"Firewall updated : {ip} is now blocked.")
     except subprocess.CalledProcessError:
-        print("Failed to block the IP addr : {ip}")
+        print(f"Failed to block the IP addr : {ip}")
 
 def watch_logs():
     print(f"Sentinel Watcher is active and Monitoring {LOG_FILE} ...")
