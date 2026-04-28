@@ -39,7 +39,7 @@ def run_audit():
                     print(f"The setting {setting} is set to {current_val} but should be {safe_value}")
              else:
                 print(f"The setting {setting} is not found in the config file, it should be set to {safe_value}")
-    return True 
+        return True
     except FileNotFoundError:
         print(f"Error: The file {CONFIG_FILE_PATH} was not found.")
         return False
