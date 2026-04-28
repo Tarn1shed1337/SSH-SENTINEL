@@ -27,13 +27,21 @@ def watch_logs():
                     time.sleep(0.1)
                     continue
                 if "Failed password" in line:
-                    match = re.search(r"from\s+(\d{1,3}(?:\.\d{1,3}){3})", line)
+                    print("Found a 'Failed password' line in the log!")
+                    match = re.search(r"from\s+(\S+)", line)
                     if match:
                         ip = match.group(1)
+                        print(f"Regex matched! Extracted IP: {ip}")
                         failed_attempts[ip] = failed_attempts.get(ip,0) + 1
+                        print(f"Current count for {ip}: {failed_attempts[ip]}/{MAX_ATTEMPTS}")
                         if failed_attempts[ip] >= MAX_ATTEMPTS:
+                            print(f"Threshold reached. Calling ban_ip({ip})...")
                             ban_ip(ip)
                             failed_attempts[ip] = -1000 # this is just a de-duplication
+                    else:
+                        print("Regex did not match.")
+
+
     except KeyboardInterrupt:
         print("\n Watcher stopped by user.")
     except FileNotFoundError:
