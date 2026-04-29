@@ -1,6 +1,7 @@
 import re 
 import subprocess
 import time
+from sentinel_logger import log_event
 
 LOG_FILE = "/var/log/auth.log"
 
@@ -14,6 +15,7 @@ def ban_ip(ip):
     try:
         subprocess.run(cmd , check=True)
         print(f"Firewall updated : {ip} is now blocked.")
+        log_event(ip ,"Banned" , "Maximum attempts reached")
     except subprocess.CalledProcessError:
         print(f"Failed to block the IP addr : {ip}")
 
